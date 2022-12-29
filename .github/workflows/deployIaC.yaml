@@ -45,14 +45,13 @@ jobs:
         region: ${{ env.REGION }}
         template: ./infra/main.bicep
         parameters: name="${{ env.NAME }}" sshpublickey="${{ secrets.SSH_PUBLIC_KEY }}"
-        failOnStdErr: false      
-    - run: echo ${{ steps.deploy.outputs.resourcegroupname }}  
-    # - name: Set AKS context
-    #   id: set-context
-    #   uses: azure/aks-set-context@v3
-    #   with:
-    #     resource-group: '${{ steps.deploy.outputs.resourcegroupname }}' 
-    #     cluster-name: '${{ steps.deploy.outputs.aksresourcename }}'
+        failOnStdErr: false          
+    - name: Set AKS context
+      id: set-context
+      uses: azure/aks-set-context@v3
+      with:
+        resource-group: '${{ steps.deploy.outputs.resourcegroupname }}' 
+        cluster-name: '${{ steps.deploy.outputs.aksresourcename }}'
     #- name: Install Runner
     #  run: |
     #      kubectl apply -f ./runner/cert-manager.yaml 
