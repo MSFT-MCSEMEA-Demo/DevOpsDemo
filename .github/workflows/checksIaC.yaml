@@ -1,0 +1,25 @@
+name: IaC Security Checks
+# Controls when the action will run. 
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  security_scanning:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run Checkov action
+      id: checkov
+      uses: bridgecrewio/checkov-action@master
+      with:
+        directory: ./infra
+        check: CKV_AZURE_3 # optional: run only a specific check_id. can be comma separated list
+        soft_fail: false # optional: do not return an error code if there are failed checks
+        download_external_modules: true # optional: download external terraform modules from public git repositories and terraform registry
+        framework: bicep # optional: run only on a specific infrastructure {cloudformation,terraform,kubernetes,all}
+        #file: sec-plan # optional: provide the path for resource to be scanned. This will override the directory if both are provided.
+        #log_level: DEBUG # optional: set log level. Default WARNING
+  
