@@ -26,7 +26,7 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    environment: development
+    #environment: development in case the OIDC federated was configured with Environment
     steps:
     - name: Checkout source code 
       uses: actions/checkout@v3
