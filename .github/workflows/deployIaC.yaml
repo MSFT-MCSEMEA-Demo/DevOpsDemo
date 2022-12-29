@@ -24,7 +24,7 @@ permissions:
   contents: read  # This is required for actions/checkout
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build-and-deploy:
+  DevOps_IaC_demo:
     runs-on: ubuntu-latest
     #environment: development in case the OIDC federated was configured with Environment
     steps:
