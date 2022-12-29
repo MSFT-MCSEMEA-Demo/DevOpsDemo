@@ -17,6 +17,9 @@ param sshPubKey string
 resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-preview' = {
   name: clusterName
   location: location
+  identity: {
+    type:'SystemAssigned'     
+  }
   
   properties: {
     dnsPrefix: clusterDNSPrefix

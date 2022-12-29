@@ -21,7 +21,7 @@ resource acrResource 'Microsoft.ContainerRegistry/registries@2022-02-01-preview'
   }
   properties: {
     adminUserEnabled: true
-    anonymousPullEnabled: true
+    anonymousPullEnabled: false
   }
 }
 
