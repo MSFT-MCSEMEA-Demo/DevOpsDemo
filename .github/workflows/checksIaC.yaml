@@ -1,4 +1,6 @@
 name: IaC Security Checks
+env:
+  TESTVAR: "${{ github.ref == 'refs/heads/dev' && 'dev' || 'main' }}"
 # Controls when the action will run. 
 on:
   # Allows you to run this workflow manually from the Actions tab
@@ -18,6 +20,8 @@ jobs:
     steps:
     - name: Checkout source code 
       uses: actions/checkout@v3
+    - run: |
+        echo ${{ env.TESTVAR }}
     - name: Run Checkov action
       id: checkov
       uses: bridgecrewio/checkov-action@master

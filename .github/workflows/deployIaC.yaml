@@ -3,7 +3,7 @@
 name: IaC Deployment
 env:
   NAME: 'devopsdemo'
-  REGION: 'westeurope'
+  REGION: 'westeurope'  
 # Controls when the action will run. 
 on:
   # Allows you to run this workflow manually from the Actions tab
