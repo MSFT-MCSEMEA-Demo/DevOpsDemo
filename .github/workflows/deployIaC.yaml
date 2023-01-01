@@ -13,14 +13,16 @@ on:
     branches: 
       - dev
     paths: 
-      - 'infra/**'   
+      - 'infra/resources/**'
+      - 'infra/dev.bicep'   
   pull_request_review:
     types:
       - submitted
     branches:
       - main
     paths: 
-      - 'infra/**'   
+      - 'infra/resources/**'
+      - 'infra/prod.bicep'   
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: read  # This is required for actions/checkout
