@@ -3,7 +3,7 @@
 name: IaC Deployment
 env:  
   ENVIRONMENT_NAME: "${{ github.ref == 'refs/heads/dev' && 'development' || 'production' }}"
-  NAME: 'devopsdemo'
+  NAME: 'ypdemo'
   REGION: 'westeurope'  
 # Controls when the action will run. 
 on:
