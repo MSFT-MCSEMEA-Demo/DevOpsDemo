@@ -1,27 +1,29 @@
 name: IaC Security Checks
-env:
-  TESTVAR: "${{ github.ref == 'refs/heads/dev' && 'dev' || 'main' }}"
+env:  
+  ENVIRONMENT_NAME: "${{ github.ref == 'refs/heads/dev' && 'development' || 'production' }}"
 # Controls when the action will run. 
 on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-  #pull_request:
-  #  types: [opened, reopened]
-  #push: 
-  #  branches-ignore:
-  #    - main
-  #  paths: 
-  #  - 'infra/**' 
-  #  - '.github/workflows/checksIaC.yaml'
+  pull_request:
+    types: [opened, reopened]
+    paths: 
+      - 'infra/**' 
+      - '.github/workflows/checksIaC.yaml'
+  push: 
+    branches-ignore:
+      - main
+    paths: 
+      - 'infra/**' 
+      - '.github/workflows/checksIaC.yaml'
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   security_scanning:
     runs-on: ubuntu-latest
+    environment: ${{ env.ENVIRONMENT_NAME }}
     steps:
     - name: Checkout source code 
       uses: actions/checkout@v3
-    - run: |
-        echo ${{ env.TESTVAR }}
     - name: Run Checkov action
       id: checkov
       uses: bridgecrewio/checkov-action@master
