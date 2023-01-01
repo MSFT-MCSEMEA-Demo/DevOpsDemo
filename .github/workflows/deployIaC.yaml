@@ -48,6 +48,8 @@ jobs:
     steps:
     - name: Checkout source code 
       uses: actions/checkout@v3
+    - run: |
+        echo ${{ needs.Setup_Job.outputs.output_env }}
     - name: 'Az CLI login'
       uses: azure/login@v1
       with:

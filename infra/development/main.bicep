@@ -19,7 +19,7 @@ resource rg 'Microsoft.Resources/resourceGroups@2020-06-01' = {
 }
 
 var acrName = 'acr${uniqueString(rg.id)}' 
-module acr 'resources/acr.bicep' = {
+module acr '../resources/acr.bicep' = {
   name: acrName
   scope: rg
   params: {
@@ -30,7 +30,7 @@ module acr 'resources/acr.bicep' = {
 
 var aksclustername = '${name}-aks'
 var adminusername = '${name}admin'
-module aks 'resources/aks.bicep' = {
+module aks '../resources/aks.bicep' = {
   name: aksclustername
   scope: rg
   params: {

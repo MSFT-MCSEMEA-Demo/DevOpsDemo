@@ -1,0 +1,22 @@
+name: Deploy ArgoCD App
+env:
+  NAME: 'devopsdemo'
+  REGION: 'westeurope'
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read
+jobs:
+  Deploy_ArgoCD_App:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source code 
+      uses: actions/checkout@v3
+    - name: Set AKS context
+      id: set-context
+      uses: azure/aks-set-context@v3
+      with:
+        resource-group: '${{ needs.DevOps_IaC_demo.outputs.resourcegroupname }}' 
+        cluster-name: '${{ needs.DevOps_IaC_demo.outputs.aksresourcename }}'
