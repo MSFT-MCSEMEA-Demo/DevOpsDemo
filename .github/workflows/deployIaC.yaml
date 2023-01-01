@@ -13,14 +13,16 @@ on:
     branches: 
       - dev
     paths: 
-      - 'infra/**'   
-  pull_request:
+      - 'infra/resources/**'
+      - 'infra/dev.bicep'   
+  pull_request_review:
     types:
-      - closed
+      - submitted
     branches:
       - main
     paths: 
-      - 'infra/**'   
+      - 'infra/resources/**'
+      - 'infra/prod.bicep'   
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: read  # This is required for actions/checkout
@@ -30,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       github.event_name == 'push' ||
-      github.event.pull_request.merged == true
+      github.event.review.state == 'approved'
     outputs:
       output_env: ${{ steps.getvariable.outputs.fromenv }}
     steps:
