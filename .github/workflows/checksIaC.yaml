@@ -4,7 +4,7 @@ env:
   ENVIRONMENT_NAME: "${{ github.ref == 'refs/heads/dev' && 'development' || 'production' }}"
   # set chekov tests based on the environment
   CHECKS: "${{ github.ref == 'refs/heads/dev' && 'CKV_AZURE_4' || 'CKV_AZURE_4,CKV_AZURE_5' }}"
-# Controls when the action will run. 
+# Controls when the action will run
 on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
