@@ -1,38 +1,55 @@
 
 # This is a basic workflow to help you get started with Actions
 name: IaC Deployment
-env:
-  NAME: 'devopsdemo'
+env:  
+  ENVIRONMENT_NAME: "${{ github.ref == 'refs/heads/dev' && 'dev' || 'prod' }}"
+  NAME: 'ypdemo'
   REGION: 'westeurope'  
 # Controls when the action will run. 
 on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-    # inputs:
-    #   env:
-    #     type: string
-    #     description: "Environment"
-    #     default: "development"
-  #push:
-  #   branches: 
-  #     - main
-  #   paths: 
-  #     - 'infra/**' 
-  #     - 'runner/**'
+  push:
+    branches: 
+      - dev
+    paths: 
+      - 'infra/**'   
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+    paths: 
+      - 'infra/**'   
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: read  # This is required for actions/checkout
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  Setup_Job:
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'push' ||
+      github.event.pull_request.merged == true
+    outputs:
+      output_env: ${{ steps.getvariable.outputs.fromenv }}
+    steps:
+      - name: getvariable
+        id: getvariable      
+        run: |
+          echo "fromenv=${{ env.ENVIRONMENT_NAME }}" >> $GITHUB_OUTPUT   
   DevOps_IaC_demo:
     runs-on: ubuntu-latest
-    #environment: development in case the OIDC federated was configured with Environment
+    needs: [Setup_Job]
+    environment: ${{ needs.Setup_Job.outputs.output_env }}    
     outputs:
       resourcegroupname: ${{ steps.deploy.outputs.resourcegroupname }}
       aksresourcename: ${{ steps.deploy.outputs.aksresourcename }}
     steps:
     - name: Checkout source code 
       uses: actions/checkout@v3
+    - run: |
+        echo ${{ needs.Setup_Job.outputs.output_env }}
     - name: 'Az CLI login'
       uses: azure/login@v1
       with:
@@ -46,12 +63,15 @@ jobs:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
         scope: subscription
         region: ${{ env.REGION }}
-        template: ./infra/main.bicep
-        parameters: name="${{ env.NAME }}" sshpublickey="${{ secrets.SSH_PUBLIC_KEY }}"
+        template: ./infra/${{ needs.Setup_Job.outputs.output_env }}.bicep
+        parameters: name="${{ env.NAME }}-${{ needs.Setup_Job.outputs.output_env }}" sshpublickey="${{ secrets.PUBLIC_KEY }}"
         failOnStdErr: false
   Install_ArgoCD:    
-    runs-on: ubuntu-latest
-    needs: [DevOps_IaC_demo]
+    runs-on: ubuntu-latest    
+    needs: [Setup_Job, DevOps_IaC_demo]        
+    environment: 
+      name: ${{ needs.Setup_Job.outputs.output_env }}   
+      url: ${{ steps.argocd.outputs.argourl }}   
     steps:  
     - name: Checkout source code 
       uses: actions/checkout@v3
@@ -68,8 +88,12 @@ jobs:
         resource-group: '${{ needs.DevOps_IaC_demo.outputs.resourcegroupname }}' 
         cluster-name: '${{ needs.DevOps_IaC_demo.outputs.aksresourcename }}'
     - name: Install ArgoCD on AKS
+      id: argocd
       run: |
-         kubectl create namespace argocd
-         kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml   
-         kubectl apply -n argocd -f ./argoCD/argo-server/argocd-service-loadbalancer.yaml
-         kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+        kubectl create namespace argocd
+        kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml   
+        kubectl apply -n argocd -f ./argoCD/argo-server/argocd-service-loadbalancer.yaml        
+        sleep 60
+        kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+        echo "argourl=https://$(kubectl get svc argocd-server-loadbalancer -nargocd  -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" >> $GITHUB_OUTPUT  
+                

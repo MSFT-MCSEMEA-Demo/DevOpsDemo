@@ -7,12 +7,15 @@ param clusterName string
 @description('AKS dns prefix')
 param clusterDNSPrefix string
 
-@description('Admin user name for AKS node')
+@description('Admin user name - AKS node')
 param adminusername string
 
 @description('AKS node ssh public key')
 @secure()
 param sshPubKey string
+
+@description('AKS authorized ip range')
+param iprange string = ''
 
 resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-preview' = {
   name: clusterName
@@ -23,7 +26,10 @@ resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-previ
   
   properties: {
     dnsPrefix: clusterDNSPrefix
-    
+    enableRBAC: true
+    apiServerAccessProfile: {
+      authorizedIPRanges: [(!empty(iprange)) ? iprange : '']
+    }
     agentPoolProfiles: [
       {
         name: 'agentpool'
