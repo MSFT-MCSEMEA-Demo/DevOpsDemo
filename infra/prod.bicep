@@ -11,8 +11,11 @@ param name string
 @secure()
 param sshpublickey string
 
+@description('AKS authorized ip range')
+param iprange string = '46.117.129.35'
+
 var resourcegroup = '${name}-rg' 
-/* RESOURCE GROUP res */
+/* RESOURCE GROUP */
 resource rg 'Microsoft.Resources/resourceGroups@2020-06-01' = {
   name: resourcegroup
   location: location

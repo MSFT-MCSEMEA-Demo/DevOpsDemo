@@ -14,6 +14,9 @@ param adminusername string
 @secure()
 param sshPubKey string
 
+@description('AKS authorized ip range')
+param iprange string = ''
+
 resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-preview' = {
   name: clusterName
   location: location
@@ -24,6 +27,9 @@ resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-previ
   properties: {
     dnsPrefix: clusterDNSPrefix
     enableRBAC: true
+    apiServerAccessProfile: {
+      authorizedIPRanges: [(!empty(iprange)) ? iprange : '']
+    }
     agentPoolProfiles: [
       {
         name: 'agentpool'
