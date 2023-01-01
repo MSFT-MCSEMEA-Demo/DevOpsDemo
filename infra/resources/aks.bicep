@@ -23,7 +23,7 @@ resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-previ
   
   properties: {
     dnsPrefix: clusterDNSPrefix
-    
+    enableRBAC: true
     agentPoolProfiles: [
       {
         name: 'agentpool'
