@@ -95,5 +95,5 @@ jobs:
         kubectl apply -n argocd -f ./argoCD/argo-server/argocd-service-loadbalancer.yaml        
         sleep 60
         kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
-        echo 'argourl=https://$(kubectl get svc argocd-server-loadbalancer -nargocd  -o jsonpath="{.status.loadBalancer.ingress[0].ip}")' >> $GITHUB_OUTPUT  
+        echo "argourl=https://$(kubectl get svc argocd-server-loadbalancer -nargocd  -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" >> $GITHUB_OUTPUT  
                 
