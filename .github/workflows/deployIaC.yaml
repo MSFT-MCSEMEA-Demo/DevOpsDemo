@@ -63,7 +63,7 @@ jobs:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
         scope: subscription
         region: ${{ env.REGION }}
-        template: ./infra/${{ needs.Setup_Job.outputs.output_env }}/main.bicep
+        template: ./infra/${{ needs.Setup_Job.outputs.output_env }}/${{ needs.Setup_Job.outputs.output_env }}.bicep
         parameters: name="${{ env.NAME }}-${{ needs.Setup_Job.outputs.output_env }}" sshpublickey="${{ secrets.PUBLIC_KEY }}"
         failOnStdErr: false
   Install_ArgoCD:    
