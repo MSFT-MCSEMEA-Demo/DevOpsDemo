@@ -1,5 +1,6 @@
 name: IaC Security Checks
 env:  
+  # Set environment based on the branch
   ENVIRONMENT_NAME: "${{ github.ref == 'refs/heads/dev' && 'development' || 'production' }}"
 # Controls when the action will run. 
 on:
