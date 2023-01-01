@@ -27,9 +27,9 @@ resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-previ
   properties: {
     dnsPrefix: clusterDNSPrefix
     enableRBAC: true
-    apiServerAccessProfile: {
-      authorizedIPRanges: [(!empty(iprange)) ? iprange : '']
-    }
+    apiServerAccessProfile: contains(iprange, '.') ? {
+      authorizedIPRanges: [iprange]
+    } : null
     agentPoolProfiles: [
       {
         name: 'agentpool'

@@ -14,9 +14,9 @@ on:
       - dev
     paths: 
       - 'infra/**'   
-  pull_request:
+  pull_request_review:
     types:
-      - closed
+      - submitted
     branches:
       - main
     paths: 
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       github.event_name == 'push' ||
-      github.event.pull_request.merged == true
+      github.event.review.state == 'approved'
     outputs:
       output_env: ${{ steps.getvariable.outputs.fromenv }}
     steps:
