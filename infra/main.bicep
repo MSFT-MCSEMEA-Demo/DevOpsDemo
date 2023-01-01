@@ -12,7 +12,7 @@ param name string
 param sshpublickey string
 
 var resourcegroup = '${name}-rg' 
-/* RESOURCE GROUP */
+/* RESOURCE GROUP res */
 resource rg 'Microsoft.Resources/resourceGroups@2020-06-01' = {
   name: resourcegroup
   location: location
