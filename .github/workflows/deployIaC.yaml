@@ -39,7 +39,6 @@ jobs:
         run: |
           echo "fromenv=${{ env.ENVIRONMENT_NAME }}" >> $GITHUB_OUTPUT   
   DevOps_IaC_demo:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     needs: [Setup_Job]
     environment: ${{ needs.Setup_Job.outputs.output_env }}    
