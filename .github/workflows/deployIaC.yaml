@@ -2,7 +2,7 @@
 # This is a basic workflow to help you get started with Actions
 name: IaC Deployment
 env:  
-  ENVIRONMENT_NAME: "${{ github.ref == 'refs/heads/dev' && 'development' || 'production' }}"
+  ENVIRONMENT_NAME: "${{ github.ref == 'refs/heads/dev' && 'dev' || 'prod' }}"
   NAME: 'ypdemo'
   REGION: 'westeurope'  
 # Controls when the action will run. 
