@@ -2,6 +2,8 @@ name: IaC Security Checks
 env:  
   # Set environment based on the branch
   ENVIRONMENT_NAME: "${{ github.ref == 'refs/heads/dev' && 'development' || 'production' }}"
+  # set chekov tests based on the environment
+  CHECKS: "${{ github.ref == 'refs/heads/dev' && 'CKV_AZURE_4' || 'CKV_AZURE_4,CKV_AZURE_5' }}"
 # Controls when the action will run. 
 on:
   # Allows you to run this workflow manually from the Actions tab
@@ -42,7 +44,7 @@ jobs:
       uses: bridgecrewio/checkov-action@master
       with:
         directory: ./infra
-        check: CKV_AZURE_4 #,CKV_AZURE_5,CKV_AZURE_6,CKV_AZURE_7,CKV_AZURE_8 # optional: run only a specific check_id. can be comma separated list
+        check: ${{ env.CHECKS }} #,CKV_AZURE_5,CKV_AZURE_6,CKV_AZURE_7,CKV_AZURE_8 # optional: run only a specific check_id. can be comma separated list
         soft_fail: false # optional: do not return an error code if there are failed checks
         download_external_modules: true # optional: download external terraform modules from public git repositories and terraform registry
         framework: bicep # optional: run only on a specific infrastructure {cloudformation,terraform,kubernetes,all}
