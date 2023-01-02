@@ -33,7 +33,6 @@ jobs:
   security_scanning:
     runs-on: ubuntu-latest 
     needs: [Setup_Job]
-    environment: ${{ needs.Setup_Job.outputs.output_env }}
     steps:    
     - name: Checkout source code 
       uses: actions/checkout@v3

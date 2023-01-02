@@ -36,9 +36,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [Setup_Job]
     environment: whatif
-    outputs:
-      resourcegroupname: ${{ steps.deploy.outputs.resourcegroupname }}
-      aksresourcename: ${{ steps.deploy.outputs.aksresourcename }}
     steps:
     - name: Checkout source code 
       uses: actions/checkout@v3
