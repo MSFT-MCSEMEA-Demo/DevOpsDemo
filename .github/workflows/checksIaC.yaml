@@ -4,7 +4,6 @@ env:
   ENVIRONMENT_NAME: "${{ github.ref == 'refs/heads/dev' && 'dev' || 'prod' }}"
   # set chekov tests based on the environment
   CHECKS: "${{ github.ref == 'refs/heads/dev' && 'CKV_AZURE_5' || 'CKV_AZURE_5' }}"
-  REGION: "westeurope"
 # Controls when the action will run
 on:
   # Allows you to run this workflow manually from the Actions tab
@@ -34,20 +33,27 @@ jobs:
   security_scanning:
     runs-on: ubuntu-latest 
     needs: [Setup_Job]
+    environment: ${{ needs.Setup_Job.outputs.output_env }}
     steps:    
     - name: Checkout source code 
       uses: actions/checkout@v3
     - run: |
         echo ${{ needs.Setup_Job.outputs.output_env }}
+    - name: 'Az CLI login'
+      uses: azure/login@v1
+      with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     - name: What-If Bicep Deployment
       id: deploy
       uses: azure/arm-deploy@v1
       with:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
         scope: subscription
-        region: ${{ env.REGION }}
+        region: ${{ secrets.REGION }}
         template: ./infra/${{ needs.Setup_Job.outputs.output_env }}.bicep
-        parameters: name="${{ env.NAME }}-${{ needs.Setup_Job.outputs.output_env }}" sshpublickey="${{ secrets.PUBLIC_KEY }}"
+        parameters: name="${{ secrets.PREFIX_NAME }}-${{ needs.Setup_Job.outputs.output_env }}" sshpublickey="${{ secrets.PUBLIC_KEY }}"
         additionalArguments: "--what-if"
     - name: Run Checkov action
       id: checkov

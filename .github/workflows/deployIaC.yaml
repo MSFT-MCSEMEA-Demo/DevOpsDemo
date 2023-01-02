@@ -3,7 +3,6 @@
 name: IaC Deployment
 env:  
   ENVIRONMENT_NAME: "${{ github.ref == 'refs/heads/dev' && 'dev' || 'prod' }}"
-  NAME: 'ypdemo'
 # Controls when the action will run. 
 on:
   # Allows you to run this workflow manually from the Actions tab
@@ -57,7 +56,7 @@ jobs:
         scope: subscription
         region: ${{ secrets.PUBLIC_KEY }}
         template: ./infra/${{ needs.Setup_Job.outputs.output_env }}.bicep
-        parameters: name="${{ env.NAME }}-${{ needs.Setup_Job.outputs.output_env }}" sshpublickey="${{ secrets.PUBLIC_KEY }}"
+        parameters: name="${{ secrets.PREFIX_NAME }}-${{ needs.Setup_Job.outputs.output_env }}" sshpublickey="${{ secrets.PUBLIC_KEY }}"
         failOnStdErr: false
         deploymentName: ${{ needs.Setup_Job.outputs.output_env }}-${{ needs.Setup_Job.outputs.guid }}
   Install_ArgoCD:    
