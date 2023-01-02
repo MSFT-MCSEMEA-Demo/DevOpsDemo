@@ -4,7 +4,6 @@ name: IaC Deployment
 env:  
   ENVIRONMENT_NAME: "${{ github.ref == 'refs/heads/dev' && 'dev' || 'prod' }}"
   NAME: 'ypdemo'
-  REGION: 'westeurope'  
 # Controls when the action will run. 
 on:
   # Allows you to run this workflow manually from the Actions tab
@@ -25,11 +24,13 @@ jobs:
       github.event_name == 'push' 
     outputs:
       output_env: ${{ steps.getvariable.outputs.fromenv }}
+      guid: ${{ steps.getvariable.outputs.guid }}
     steps:
       - name: getvariable
         id: getvariable      
         run: |
-          echo "fromenv=${{ env.ENVIRONMENT_NAME }}" >> $GITHUB_OUTPUT   
+          echo "fromenv=${{ env.ENVIRONMENT_NAME }}" >> $GITHUB_OUTPUT
+          echo "guid=$(uuidgen)" >> $GITHUB_OUTPUT
   DevOps_IaC_demo:
     runs-on: ubuntu-latest
     needs: [Setup_Job]
@@ -54,10 +55,11 @@ jobs:
       with:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
         scope: subscription
-        region: ${{ env.REGION }}
+        region: ${{ secrets.PUBLIC_KEY }}
         template: ./infra/${{ needs.Setup_Job.outputs.output_env }}.bicep
         parameters: name="${{ env.NAME }}-${{ needs.Setup_Job.outputs.output_env }}" sshpublickey="${{ secrets.PUBLIC_KEY }}"
         failOnStdErr: false
+        deploymentName: ${{ needs.Setup_Job.outputs.output_env }}-${{ needs.Setup_Job.outputs.guid }}
   Install_ArgoCD:    
     runs-on: ubuntu-latest    
     needs: [Setup_Job, DevOps_IaC_demo]        
