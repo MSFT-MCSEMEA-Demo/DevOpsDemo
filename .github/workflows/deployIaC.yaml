@@ -58,7 +58,7 @@ jobs:
         additionalArguments: "--what-if"
   Deployment_IaC:
     runs-on: ubuntu-latest
-    needs: [Setup_Job, WhatIf_IaC]
+    needs: [Setup_Job, WhatIf]
     environment: ${{ needs.Setup_Job.outputs.output_env }}    
     outputs:
       resourcegroupname: ${{ steps.deploy.outputs.resourcegroupname }}
