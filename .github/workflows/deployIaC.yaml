@@ -2,6 +2,8 @@
 # This is a basic workflow to help you get started with Actions
 name: IaC Deployment
 env:  
+  PREFIX: ypdemo
+  REGION: westeurope
   ENVIRONMENT_NAME: "${{ github.ref == 'refs/heads/dev' && 'dev' || 'prod' }}"
 # Controls when the action will run. 
 on:
@@ -30,10 +32,10 @@ jobs:
         run: |
           echo "fromenv=${{ env.ENVIRONMENT_NAME }}" >> $GITHUB_OUTPUT
           echo "guid=$(uuidgen)" >> $GITHUB_OUTPUT
-  DevOps_IaC_demo:
+  WhatIf_IaC:
     runs-on: ubuntu-latest
     needs: [Setup_Job]
-    environment: ${{ needs.Setup_Job.outputs.output_env }}    
+    environment: whatif
     outputs:
       resourcegroupname: ${{ steps.deploy.outputs.resourcegroupname }}
       aksresourcename: ${{ steps.deploy.outputs.aksresourcename }}
@@ -48,20 +50,46 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: What-If Bicep Deployment
+      id: whatif
+      uses: azure/arm-deploy@v1
+      with:
+        subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+        scope: subscription
+        region: ${{ env.REGION }}
+        template: ./infra/${{ needs.Setup_Job.outputs.output_env }}.bicep
+        parameters: name="${{ env.PREFIX }}-${{ needs.Setup_Job.outputs.output_env }}" sshpublickey="${{ secrets.SSH_PUBLIC_KEY }}"
+        additionalArguments: "--what-if"
+  Deployment_IaC:
+    runs-on: ubuntu-latest
+    needs: [Setup_Job, WhatIf_IaC]
+    environment: ${{ needs.Setup_Job.outputs.output_env }}    
+    outputs:
+      resourcegroupname: ${{ steps.deploy.outputs.resourcegroupname }}
+      aksresourcename: ${{ steps.deploy.outputs.aksresourcename }}
+    steps:
+    - name: Checkout source code 
+      uses: actions/checkout@v3
+    - name: 'Az CLI login'
+      uses: azure/login@v1
+      with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     - name: Bicep Deployment
       id: deploy
       uses: azure/arm-deploy@v1
       with:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
         scope: subscription
-        region: ${{ secrets.PUBLIC_KEY }}
+        region: ${{ env.REGION }}
         template: ./infra/${{ needs.Setup_Job.outputs.output_env }}.bicep
-        parameters: name="${{ secrets.PREFIX_NAME }}-${{ needs.Setup_Job.outputs.output_env }}" sshpublickey="${{ secrets.PUBLIC_KEY }}"
+        parameters: name="${{ env.PREFIX }}-${{ needs.Setup_Job.outputs.output_env }}" sshpublickey="${{ secrets.PUBLIC_KEY }}"
         failOnStdErr: false
         deploymentName: ${{ needs.Setup_Job.outputs.output_env }}-${{ needs.Setup_Job.outputs.guid }}
   Install_ArgoCD:    
     runs-on: ubuntu-latest    
-    needs: [Setup_Job, DevOps_IaC_demo]        
+    needs: [Setup_Job, WhatIf_IaC, Deployment_IaC]        
     environment: 
       name: ${{ needs.Setup_Job.outputs.output_env }}   
       url: ${{ steps.argocd.outputs.argourl }}   
@@ -78,8 +106,8 @@ jobs:
       id: set-context
       uses: azure/aks-set-context@v3
       with:
-        resource-group: '${{ needs.DevOps_IaC_demo.outputs.resourcegroupname }}' 
-        cluster-name: '${{ needs.DevOps_IaC_demo.outputs.aksresourcename }}'
+        resource-group: '${{ needs.Deployment_IaC.outputs.resourcegroupname }}' 
+        cluster-name: '${{ needs.Deployment_IaC.outputs.aksresourcename }}'
     - name: Install ArgoCD on AKS
       id: argocd
       run: |

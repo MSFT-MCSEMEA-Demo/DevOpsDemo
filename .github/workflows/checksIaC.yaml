@@ -19,9 +19,6 @@ on:
     paths: 
       - 'infra/**' 
       - '.github/workflows/checksIaC.yaml'
-permissions:
-  id-token: write # This is required for requesting the JWT
-  contents: read  # This is required for actions/checkout
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:  
   Setup_Job:
@@ -42,22 +39,6 @@ jobs:
       uses: actions/checkout@v3
     - run: |
         echo ${{ needs.Setup_Job.outputs.output_env }}
-    - name: 'Az CLI login'
-      uses: azure/login@v1
-      with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-    - name: What-If Bicep Deployment
-      id: deploy
-      uses: azure/arm-deploy@v1
-      with:
-        subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
-        scope: subscription
-        region: ${{ secrets.REGION }}
-        template: ./infra/${{ needs.Setup_Job.outputs.output_env }}.bicep
-        parameters: name="${{ secrets.PREFIX_NAME }}-${{ needs.Setup_Job.outputs.output_env }}" sshpublickey="${{ secrets.PUBLIC_KEY }}"
-        additionalArguments: "--what-if"
     - name: Run Checkov action
       id: checkov
       uses: bridgecrewio/checkov-action@master
