@@ -83,7 +83,6 @@ jobs:
         parameters: name="${{ env.PREFIX }}-${{ needs.Setup_Job.outputs.output_env }}" sshpublickey="${{ secrets.PUBLIC_KEY }}"
         failOnStdErr: false
         deploymentName: ${{ needs.Setup_Job.outputs.output_env }}-${{ needs.Setup_Job.outputs.guid }}
-        additionalArguments: "--rollback-on-error"
   Install_ArgoCD:    
     runs-on: ubuntu-latest    
     needs: [Deployment_IaC]        
