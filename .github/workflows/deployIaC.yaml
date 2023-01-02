@@ -12,15 +12,8 @@ on:
   push:
     branches: 
       - "**"
-      - "!main"
     paths: 
-      - 'infra/resources/**'
-      - 'infra/dev.bicep'   
-  pull_request:
-    types: [opened, synchronize, closed]
-    paths: 
-      - 'infra/resources/**'
-      - 'infra/prod.bicep'   
+      - 'infra/**'
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: read  # This is required for actions/checkout
@@ -29,8 +22,7 @@ jobs:
   Setup_Job:
     runs-on: ubuntu-latest
     if: |
-      github.event_name == 'push' ||
-      (!(github.event.action == 'closed' && github.event.pull_request.merged != true))
+      github.event_name == 'push' 
     outputs:
       output_env: ${{ steps.getvariable.outputs.fromenv }}
     steps:
