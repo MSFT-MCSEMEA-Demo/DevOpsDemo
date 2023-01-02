@@ -85,7 +85,7 @@ jobs:
         deploymentName: ${{ needs.Setup_Job.outputs.output_env }}-${{ needs.Setup_Job.outputs.guid }}
   Install_ArgoCD:    
     runs-on: ubuntu-latest    
-    needs: [Deployment_IaC]        
+    needs: [Setup_Job, Deployment_IaC]        
     environment: 
       name: ${{ needs.Setup_Job.outputs.output_env }}   
       url: ${{ steps.argocd.outputs.argourl }}   
