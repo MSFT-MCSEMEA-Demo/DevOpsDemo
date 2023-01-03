@@ -60,9 +60,9 @@ resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-previ
       }
     }
     addonProfiles: {
-      kubeDashboard: {
-        enabled: true
-      }
+      omsagent:{
+        enabled: true        
+      }        
     }
   }
 }
