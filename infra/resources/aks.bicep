@@ -17,6 +17,9 @@ param sshPubKey string
 @description('AKS authorized ip range')
 param iprange string = ''
 
+@description('LogAnalytic workspace id')
+param logAnalyticId string
+
 resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-preview' = {
   name: clusterName
   location: location
@@ -61,7 +64,10 @@ resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-previ
     }
     addonProfiles: {
       omsagent:{
-        enabled: true        
+        enabled: true 
+        config: {
+          logAnalyticsWorkspaceResourceID : logAnalyticId
+        }       
       }        
     }
   }

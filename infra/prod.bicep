@@ -31,6 +31,16 @@ module acr 'resources/acr.bicep' = {
   }
 }
 
+module loganalytic 'resources/loganalytic.bicep' = {
+  name: '${rg.name}-loganalytic'
+  scope: rg
+  params: {
+    workspaceName: '${toLower(name)}-loganalytic-ws'
+    location: location
+    newResourcePermissions: false
+  }
+}
+
 var aksclustername = '${name}-aks'
 var adminusername = '${name}admin'
 module aks 'resources/aks.bicep' = {
@@ -42,6 +52,7 @@ module aks 'resources/aks.bicep' = {
     location: location
     clusterDNSPrefix: aksclustername       
     sshPubKey: sshpublickey
+    logAnalyticId: loganalytic.outputs.loganalyticworkspaceresourceid
     //iprange: authiprange
   }
 }
@@ -53,4 +64,5 @@ output acrresoucename string = acr.outputs.acrname
 output aksclusterfqdn string = aks.outputs.aksclusterfqdn
 output aksresourceid string = aks.outputs.aksresourceid
 output aksresourcename string = aks.outputs.aksresourcename
-
+output loganalyticresourceid string = loganalytic.outputs.loganalyticworkspaceresourceid
+output loganalyticresourcename string = loganalytic.outputs.loganalyticworkspacename
