@@ -26,7 +26,6 @@ resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-previ
   
   properties: {
     dnsPrefix: clusterDNSPrefix
-    enableRBAC: true
     apiServerAccessProfile: contains(iprange, '.') ? {
       authorizedIPRanges: [iprange]
     } : null
@@ -60,7 +59,11 @@ resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-previ
         ]
       }
     }
-
+    addonProfiles: {
+      kubeDashboard: {
+        enabled: true
+      }
+    }
   }
 }
 
