@@ -39,7 +39,6 @@ module aks 'resources/aks.bicep' = {
     location: location
     clusterDNSPrefix: aksclustername       
     sshPubKey: sshpublickey
-    enablerbac: false
   }
 }
 
