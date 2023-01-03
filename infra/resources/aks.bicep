@@ -17,6 +17,8 @@ param sshPubKey string
 @description('AKS authorized ip range')
 param iprange string = ''
 
+param enablerbac bool = false
+
 resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-preview' = {
   name: clusterName
   location: location
@@ -26,7 +28,7 @@ resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-previ
   
   properties: {
     dnsPrefix: clusterDNSPrefix
-    enableRBAC: true
+    enableRBAC: enablerbac
     apiServerAccessProfile: contains(iprange, '.') ? {
       authorizedIPRanges: [iprange]
     } : null
@@ -59,7 +61,8 @@ resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-previ
           }
         ]
       }
-    }    
+    }
+
   }
 }
 

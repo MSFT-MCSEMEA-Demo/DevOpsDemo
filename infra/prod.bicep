@@ -11,8 +11,8 @@ param name string
 @secure()
 param sshpublickey string
 
-@description('AKS authorized ip range')
-param authiprange string = '46.117.129.35'
+//@description('AKS authorized ip range')
+//param authiprange string = '46.117.129.35'
 
 var resourcegroup = '${name}-rg' 
 /* RESOURCE GROUP */
@@ -42,7 +42,7 @@ module aks 'resources/aks.bicep' = {
     location: location
     clusterDNSPrefix: aksclustername       
     sshPubKey: sshpublickey
-    iprange: authiprange
+    //iprange: authiprange
   }
 }
 
