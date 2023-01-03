@@ -18,18 +18,28 @@ param sshPubKey string
 param iprange string = ''
 
 @description('LogAnalytic workspace id')
-param logAnalyticId string
+param logAnalyticId string = ''
+
+@description('Managed identity Principal id')
+param managedIdentityName string
+
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' existing = {
+  name: managedIdentityName
+}
 
 resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-preview' = {
   name: clusterName
   location: location
   identity: {
-    type:'SystemAssigned'     
+    type:'UserAssigned' 
+    userAssignedIdentities: {
+      '${managedIdentity.id}': {}
+    }
   }
-  
   properties: {
     dnsPrefix: clusterDNSPrefix
-    apiServerAccessProfile: contains(iprange, '.') ? {
+    enableRBAC: true
+    apiServerAccessProfile: !empty(iprange) ? {
       authorizedIPRanges: [iprange]
     } : null
     agentPoolProfiles: [
@@ -62,14 +72,14 @@ resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-previ
         ]
       }
     }
-    addonProfiles: {
+    addonProfiles: !empty(logAnalyticId) ? {
       omsagent:{
         enabled: true 
         config: {
           logAnalyticsWorkspaceResourceID : logAnalyticId
         }       
-      }        
-    }
+      }
+    } : null
   }
 }
 
