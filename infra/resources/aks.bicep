@@ -31,7 +31,10 @@ resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-previ
   name: clusterName
   location: location
   identity: {
-    type:'SystemAssigned' 
+    type:'UserAssigned' 
+    userAssignedIdentities: {
+      '${managedIdentity.id}': {}
+    }
   }
   properties: {
     dnsPrefix: clusterDNSPrefix
@@ -68,6 +71,9 @@ resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-previ
           }
         ]
       }
+    }
+    servicePrincipalProfile: {
+      clientId: 'msi'
     }
     identityProfile: {
       kubeletidentity:{
