@@ -12,7 +12,7 @@ param name string
 param sshpublickey string
 
 @description('AKS authorized ip range')
-param authiprange string = '46.117.129.35'
+param authiprange string = ''
 
 var resourcegroup = '${name}-rg' 
 /* RESOURCE GROUP */
@@ -21,20 +21,41 @@ resource rg 'Microsoft.Resources/resourceGroups@2020-06-01' = {
   location: location
 }
 
+/* USER MANAGED IDENTITY */
+module identity 'resources/managedid.bicep' = {
+  name: '${rg.name}-identity'
+  scope: rg
+  params: {
+    location: location
+    managedIdentityName: toLower(name)
+  }
+}
+
 var acrName = 'acr${uniqueString(rg.id)}' 
 module acr 'resources/acr.bicep' = {
-  name: acrName
+  name: '${rg.name}-acr'
   scope: rg
   params: {
     acrName: acrName
     location: rg.location
+    manageidObjId: identity.outputs.managedIdentityPrincipalId 
   }
 }
+
+/*module loganalytic 'resources/loganalytic.bicep' = {
+  name: '${rg.name}-loganalytic'
+  scope: rg
+  params: {
+    workspaceName: '${toLower(name)}-loganalytic-ws'
+    location: location
+    newResourcePermissions: false
+  }
+}*/
 
 var aksclustername = '${name}-aks'
 var adminusername = '${name}admin'
 module aks 'resources/aks.bicep' = {
-  name: aksclustername
+  name: '${rg.name}-aks'
   scope: rg
   params: {
     clusterName: aksclustername
@@ -43,6 +64,8 @@ module aks 'resources/aks.bicep' = {
     clusterDNSPrefix: aksclustername       
     sshPubKey: sshpublickey
     iprange: authiprange
+    managedIdentityName: identity.outputs.managedIdentityName  
+    //logAnalyticId: loganalytic.outputs.loganalyticworkspaceresourceid  
   }
 }
 
@@ -53,4 +76,9 @@ output acrresoucename string = acr.outputs.acrname
 output aksclusterfqdn string = aks.outputs.aksclusterfqdn
 output aksresourceid string = aks.outputs.aksresourceid
 output aksresourcename string = aks.outputs.aksresourcename
-
+output managedidentityprincipalid string = identity.outputs.managedIdentityPrincipalId
+output managedidentityclientid string = identity.outputs.managedIdentityClientId
+output managedidentityresourceid string = identity.outputs.managedIdentityResourceId
+output managedidentityname string = identity.outputs.managedIdentityName
+//output loganalyticresourceid string = loganalytic.outputs.loganalyticworkspaceresourceid
+//output loganalyticresourcename string = loganalytic.outputs.loganalyticworkspacename
