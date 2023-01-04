@@ -32,14 +32,14 @@ resource controlplanemanagedIdentity 'Microsoft.ManagedIdentity/userAssignedIden
   location: location
 }
 
-//f1a07417-d97a-45cb-824c-7a7467783830-Managed Identity Operator
+//f1a07417-d97a-45cb-824c-7a7467783830 - Managed Identity Operator
 var managedIDentityOperatorRole = 'f1a07417-d97a-45cb-824c-7a7467783830'
 resource  managedIDentityOperatorRAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(managedIDentityOperatorRole, managedIdentityName, controlplanemanagedIdentity.name)
   scope: managedIdentity
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', managedIDentityOperatorRole)
-    principalId: managedIdentity.properties.principalId
+    principalId: controlplanemanagedIdentity.properties.principalId
     principalType: 'ServicePrincipal'
   }
 }
