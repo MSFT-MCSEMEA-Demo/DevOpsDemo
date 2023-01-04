@@ -31,10 +31,7 @@ resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-previ
   name: clusterName
   location: location
   identity: {
-    type:'UserAssigned' 
-    userAssignedIdentities: {
-      '${managedIdentity.id}': {}
-    }
+    type:'SystemAssigned'     
   }
   properties: {
     dnsPrefix: clusterDNSPrefix
