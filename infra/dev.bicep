@@ -21,10 +21,17 @@ resource rg 'Microsoft.Resources/resourceGroups@2020-06-01' = {
   location: location
 }
 
+var aksnodesresourcegroup = '${name}-aksnodes-rg' 
+/* RESOURCE GROUP */
+resource aksnoderg 'Microsoft.Resources/resourceGroups@2020-06-01' = {
+  name: aksnodesresourcegroup
+  location: location
+}
+
 /* USER MANAGED IDENTITY */
 module identity 'resources/managedid.bicep' = {
   name: '${rg.name}-identity'
-  scope: rg
+  scope: aksnoderg
   params: {
     location: location
     managedIdentityName: toLower(name)
@@ -63,7 +70,8 @@ module aks 'resources/aks.bicep' = {
     location: location
     clusterDNSPrefix: aksclustername       
     sshPubKey: sshpublickey
-    managedIdentityName: identity.outputs.managedIdentityName   
+    managedIdentityName: identity.outputs.managedIdentityName  
+    aksnoderg: aksnoderg.name
     iprange: authiprange
     //logAnalyticId: loganalytic.outputs.loganalyticworkspaceresourceid
   }

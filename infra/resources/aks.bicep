@@ -23,37 +23,35 @@ param logAnalyticId string = ''
 @description('Managed identity name')
 param managedIdentityName string
 
+@description('nodeResourceGroup')
+param aksnoderg string
+
 resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' existing = {
   name: managedIdentityName
 }
 
-resource controlplanemanagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
+/*resource controlplanemanagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
   name: '${managedIdentityName}-cp'
   location: location
-}
+}*/
 
 //f1a07417-d97a-45cb-824c-7a7467783830-Managed Identity Operator
-var managedIDentityOperatorRole = 'f1a07417-d97a-45cb-824c-7a7467783830'
+/*var managedIDentityOperatorRole = 'f1a07417-d97a-45cb-824c-7a7467783830'
 resource  managedIDentityOperatorRAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(managedIDentityOperatorRole, managedIdentityName, controlplanemanagedIdentity.name)
   scope: managedIdentity
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', managedIDentityOperatorRole)
-    principalId: controlplanemanagedIdentity.properties.principalId
+    principalId: managedIdentity.properties.principalId
     principalType: 'ServicePrincipal'
   }
-}
+}*/
 
-
-
-resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-preview' = {
+resource akscluster 'Microsoft.ContainerService/managedClusters@2022-09-02-preview' = {
   name: clusterName
   location: location
   identity: {
-    type:'UserAssigned' 
-    userAssignedIdentities: {
-      '${controlplanemanagedIdentity.id}': {}
-    }
+    type:'SystemAssigned'     
   }
   properties: {
     dnsPrefix: clusterDNSPrefix
@@ -69,16 +67,6 @@ resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-previ
         vmSize: 'Standard_DS2_v2'
         osType: 'Linux'
         mode: 'System'
-      }
-      {
-        name: 'simulator'
-        count: 1
-        vmSize: 'Standard_B4ms'
-        osType: 'Linux'
-        mode: 'User'
-        nodeLabels:{
-          type: 'application'
-        }
       }      
     ]
     linuxProfile: {
@@ -91,6 +79,7 @@ resource akscluster 'Microsoft.ContainerService/managedClusters@2022-05-02-previ
         ]
       }
     }
+    nodeResourceGroup: aksnoderg
     servicePrincipalProfile: {
       clientId: 'msi'
     }
