@@ -2,7 +2,7 @@
 # This is a basic workflow to help you get started with Actions
 name: IaC Deployment
 env:  
-  PREFIX: rosdemo
+  PREFIX: ypdemo
   REGION: westeurope
   ENVIRONMENT_NAME: "${{ github.ref == 'refs/heads/dev' && 'dev' || 'prod' }}"
 # Controls when the action will run. 
