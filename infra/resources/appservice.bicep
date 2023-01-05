@@ -7,14 +7,14 @@ param linuxFxVersion string = 'node|14-lts' // The runtime stack of web app
 @description('app service location')
 param location string = resourceGroup().location // Location for all resources
 
-@description('App service repo url')
+/*@description('App service repo url')
 param repositoryUrl string = 'https://github.com/MSFT-MCSEMEA-Demo/nodejs-docs-hello-world'
 
 @description('App Service branch name')
 param branch string = 'main'
 
 @description('App Service isManual')
-param ismanual bool = true
+param ismanual bool = true*/
 
 var appServicePlanName = toLower('AppServicePlan-${webAppName}')
 var webSiteName = toLower('wapp-${webAppName}')

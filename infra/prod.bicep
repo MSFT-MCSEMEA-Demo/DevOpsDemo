@@ -84,8 +84,8 @@ module website 'resources/appservice.bicep' = {
   name: '${rg.name}-website'
   scope: rg
   params: {
-    ismanual: true
-    branch: 'main'
+    //ismanual: true
+    //branch: 'main'
     location: location 
   }
 }
