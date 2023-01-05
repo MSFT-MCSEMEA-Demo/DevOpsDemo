@@ -86,6 +86,7 @@ module website 'resources/appservice.bicep' = {
   params: {
     //ismanual: true
     //branch: 'main'
+    sku: 'B1'
     location: location 
   }
 }
