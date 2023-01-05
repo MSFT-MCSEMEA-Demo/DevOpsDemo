@@ -69,12 +69,7 @@ var firewallrules = [
     Name: 'rule1'
     StartIpAddress: '0.0.0.0'
     EndIpAddress: '255.255.255.255'
-  }
-  {
-    Name: 'rule2'
-    StartIpAddress: '0.0.0.0'
-    EndIpAddress: '255.255.255.255'
-  }
+  }  
 ]
 
 resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = if (isprod) {
@@ -129,7 +124,7 @@ resource mysqlDbServer 'Microsoft.DBforMySQL/servers@2017-12-01' = {
 }
 
 @batchSize(1)
-resource firewallRules 'Microsoft.DBforMySQL/servers/firewallRules@2017-12-01' = [for rule in firewallrules: if (isprod) {
+resource firewallRules 'Microsoft.DBforMySQL/servers/firewallRules@2017-12-01' = [for rule in firewallrules: if (!isprod) {
   name: '${mysqlDbServer.name}/${rule.Name}'
   properties: {
     startIpAddress: rule.StartIpAddress
