@@ -43,7 +43,8 @@ resource appService 'Microsoft.Web/sites@2020-06-01' = {
 }
 
 resource srcControls 'Microsoft.Web/sites/sourcecontrols@2021-01-01' = {
-  name: '${appService.name}/web'
+  name: 'web'
+  parent: appService
   properties: {
     repoUrl: repositoryUrl
     branch: branch

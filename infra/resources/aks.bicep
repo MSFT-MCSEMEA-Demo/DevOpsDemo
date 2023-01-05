@@ -46,7 +46,7 @@ resource  managedIDentityOperatorRAssignment 'Microsoft.Authorization/roleAssign
 
 resource akscluster 'Microsoft.ContainerService/managedClusters@2022-09-02-preview' = {
   name: clusterName
-  location: location
+  location: location  
   identity: {
     type:'UserAssigned' 
     userAssignedIdentities: {
