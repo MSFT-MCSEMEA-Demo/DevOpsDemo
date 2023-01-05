@@ -69,6 +69,39 @@ module aks 'resources/aks.bicep' = {
   }
 }
 
+var storagename = '${name}storage'
+module storage 'resources/storage.bicep' = {
+  name: '${rg.name}-storage'
+  scope: rg
+  params: {
+    name: storagename
+    location: location    
+  }
+}
+
+module website 'resources/appservice.bicep' = {
+  name: '${rg.name}-website'
+  scope: rg
+  params: {
+    //ismanual: false
+    //branch: 'dev'
+    location: location 
+  }
+}
+
+var mysqlname = '${name}mysql'
+module mysql 'resources/mysql.bicep' = {
+  name: '${rg.name}-mysql'
+  scope: rg
+  params: {
+    serverName: mysqlname
+    location: location
+    administratorLogin: 'devadminuser'
+    administratorLoginPassword: 'Demopass123'
+    isprod: false
+  }
+}
+
 output resourcegroupname string = rg.name
 output acrloginserver string = acr.outputs.acrloginserver
 output acrresourceid string = acr.outputs.acrresourceid
@@ -80,6 +113,12 @@ output managedidentityprincipalid string = identity.outputs.managedIdentityPrinc
 output managedidentityclientid string = identity.outputs.managedIdentityClientId
 output managedidentityresourceid string = identity.outputs.managedIdentityResourceId
 output managedidentityname string = identity.outputs.managedIdentityName
+output storageaccountname string = storage.outputs.storageaccountname
+output storageresourceid string = storage.outputs.storageresourceid
+output storagebloburi string = storage.outputs.storagebloburi
+output appserviceurl string = website.outputs.appserviceurl
+output appsericeresourceid string = website.outputs.appsericeresourceid
+output mysqlresourceid string = mysql.outputs.mysqlresourceid
 //output loganalyticresourceid string = loganalytic.outputs.loganalyticworkspaceresourceid
 //output loganalyticresourcename string = loganalytic.outputs.loganalyticworkspacename
 

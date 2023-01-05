@@ -7,7 +7,7 @@ param clusterName string
 @description('AKS dns prefix')
 param clusterDNSPrefix string
 
-@description('Admin user name - AKS node')
+@description('Admin user name for AKS node')
 param adminusername string
 
 @description('AKS node ssh public key')
@@ -46,7 +46,7 @@ resource  managedIDentityOperatorRAssignment 'Microsoft.Authorization/roleAssign
 
 resource akscluster 'Microsoft.ContainerService/managedClusters@2022-09-02-preview' = {
   name: clusterName
-  location: location
+  location: location  
   identity: {
     type:'UserAssigned' 
     userAssignedIdentities: {
