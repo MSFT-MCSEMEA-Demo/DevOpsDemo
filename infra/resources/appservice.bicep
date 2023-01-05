@@ -42,7 +42,7 @@ resource appService 'Microsoft.Web/sites@2020-06-01' = {
   }
 }
 
-resource srcControls 'Microsoft.Web/sites/sourcecontrols@2021-01-01' = {
+/*resource srcControls 'Microsoft.Web/sites/sourcecontrols@2021-01-01' = {
   name: 'web'
   parent: appService
   properties: {
@@ -50,7 +50,8 @@ resource srcControls 'Microsoft.Web/sites/sourcecontrols@2021-01-01' = {
     branch: branch
     isManualIntegration: ismanual
   }
-}
+  dependsOn: [ appService ]
+}*/
 
 output appserviceurl string = appService.properties.defaultHostName
 output appsericeresourceid string = appService.id
