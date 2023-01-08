@@ -11,10 +11,10 @@ spec:
   source:
     helm:
       valueFiles:
-        - values.yaml
-    path: manifests/helm-app
-    repoURL: https://github.com/MSFT-MCSEMEA-Demo/devops-demo-app.git
-    targetRevision: dev
+        - prod.yaml
+    path: helm/demo-app
+    repoURL: https://github.com/MSFT-MCSEMEA-Demo/DevOpsDemo
+    targetRevision: main
   syncPolicy: 
     automated:
       prune: true
