@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+    spec:
+      containers:
+      - image: {{ .Values.acr.uri | default (.Files.Get "crds/acr" | trim) }}/{{ .Values.acr.image }}:{{ .Values.acr.tag | default (.Files.Get "crds/tag" | trim) }}
+        name: {{ .Values.name }}
+        imagePullPolicy: {{ .Values.acr.pull }}
+        ports:
+        - containerPort: 80
+        livenessProbe:
+          httpGet:
+            path:  /
+            port:  80
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+

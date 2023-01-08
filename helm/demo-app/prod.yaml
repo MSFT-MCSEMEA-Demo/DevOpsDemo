@@ -1,0 +1,8 @@
+namespace: demo
+name: demoapp
+svcname: demoappsvc
+acr:
+  uri: ""
+  image: nginx
+  tag: ""
+  pull: IfNotPresent
