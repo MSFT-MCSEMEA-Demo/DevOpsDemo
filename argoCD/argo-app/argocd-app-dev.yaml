@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: argocd-app
   namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: acr6ppmfq4towtku.azurecr.io/demoapp:latest
 spec:
   destination:
     namespace: default
