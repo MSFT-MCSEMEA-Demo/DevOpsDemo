@@ -15,7 +15,7 @@ spec:
         app: {{ .Values.name }}
     spec:
       containers:
-      - image: {{ .Values.acr.uri }}/{{ .Values.acr.image }}:{{ .Values.acr.tag | default (.Files.Get "crds/tag" | trim) }}
+      - image: {{ .Values.acr.uri }}/{{ .Values.acr.image }}:{{ .Values.acr.tag | default (.Files.Get "dynamic/tag" | trim) }}
         name: {{ .Values.deployment.container.name }}
         imagePullPolicy: {{ .Values.acr.pull }}        
         ports:
