@@ -58,4 +58,4 @@ jobs:
       run: |
         kubectl apply -n argocd -f ./argoCD/argo-app/argocd-app-${{ needs.Setup_Job.outputs.output_env }}.yaml        
         sleep 60
-        echo "demoappurl=https://$(kubectl get svc demoappsvc -ndemo  -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" >> $GITHUB_OUTPUT          
+        echo "demoappurl=http://$(kubectl get svc demoappsvc -ndemo  -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" >> $GITHUB_OUTPUT          
