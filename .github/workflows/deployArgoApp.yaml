@@ -9,11 +9,11 @@ on:
       resource_group:
         type: string
         description: "Resource Group name"
-        default: "ypdemo-dev-rg"
+        default: "ypdemodev-rg"
       aks_name:
         type: string
         description: "AKS name"
-        default: "ypdemo-dev-aks"
+        default: "ypdemodev-aks"
       acr_uri:
         type: string
         description: "ACR URI"

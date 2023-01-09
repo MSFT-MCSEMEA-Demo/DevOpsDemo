@@ -15,17 +15,12 @@ spec:
         app: {{ .Values.name }}
     spec:
       containers:
-      - image: {{ .Values.acr.uri | default (.Files.Get "crds/acr" | trim) }}/{{ .Values.acr.image }}:{{ .Values.acr.tag | default (.Files.Get "crds/tag" | trim) }}
-        name: {{ .Values.name }}
-        imagePullPolicy: {{ .Values.acr.pull }}
+      - image: {{ .Values.acr.uri }}/{{ .Values.acr.image }}:{{ .Values.acr.tag | default (.Files.Get "crds/tag" | trim) }}
+        name: {{ .Values.deployment.container.name }}
+        imagePullPolicy: {{ .Values.acr.pull }}        
         ports:
-        - containerPort: 80
-        livenessProbe:
-          httpGet:
-            path:  /
-            port:  80
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 80
+          - containerPort: {{ .Values.deployment.container.port }}
+        envFrom:
+          - configMapRef:
+              name: {{ .Values.name }}
 
