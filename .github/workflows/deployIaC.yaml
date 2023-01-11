@@ -64,7 +64,7 @@ jobs:
     outputs:
       resourcegroupname: ${{ steps.deploy.outputs.resourcegroupname }}
       aksresourcename: ${{ steps.deploy.outputs.aksresourcename }}
-      acrresourcename: ${{ steps.deploy.outputs.acrresoucename }}
+      acrloginserver: ${{ steps.deploy.outputs.acrloginserver }}
     steps:
     - name: Checkout source code 
       uses: actions/checkout@v3
@@ -112,6 +112,32 @@ jobs:
         kubectl create namespace argocd
         kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml   
         kubectl apply -n argocd -f ./argoCD/argo-server/argocd-service-loadbalancer.yaml        
-        sleep 60
+        sleep 45
         kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
         echo "argourl=https://$(kubectl get svc argocd-server-loadbalancer -nargocd  -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" >> $GITHUB_OUTPUT
+  UpdateArgoAppRepoConfig:
+    needs: [Setup_Job, Deployment_IaC]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Use config repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ github.repository_owner }}/argocd-apps-config
+        ref: main
+        token: ${{ secrets.ACTIONS_TOKEN }}
+    - name: Push commit to ArgoCD App repository
+      run: |        
+        git config user.name $(git log -n 1 --pretty=format:%an)
+        git config user.email $(git log -n 1 --pretty=format:%ae)
+        if [[ '${{ needs.Setup_Job.outputs.output_env }}' == 'dev' ]]; then
+          echo ${{ needs.Deployment_IaC.outputs.resourcegroupname }} > global/rg-dev
+          echo ${{ needs.Deployment_IaC.outputs.aksresourcename }} > global/aks-dev
+          echo ${{ needs.Deployment_IaC.outputs.acrloginserver }} > helm/demo-app/dynamic/acr-dev
+          git commit global/rg-dev global/aks-dev helm/demo-app/dynamic/acr-dev -m "IaC deployment - dev"
+        else
+          echo ${{ needs.Deployment_IaC.outputs.resourcegroupname }} > global/rg-prod
+          echo ${{ needs.Deployment_IaC.outputs.aksresourcename }} > global/aks-prod
+          echo ${{ needs.Deployment_IaC.outputs.acrloginserver }} > helm/demo-app/dynamic/acr-prod
+          git commit global/rg-prod global/aks-prod helm/demo-app/dynamic/acr-prod -m "IaC deployment - prod"
+        fi
+        git push origin HEAD
