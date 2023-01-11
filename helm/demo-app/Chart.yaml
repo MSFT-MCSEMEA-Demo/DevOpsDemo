@@ -1,5 +1,0 @@
-apiVersion: v1
-name: demo-app
-version: 1.0.0
-maintainers:
-  - name: Yaron P.
