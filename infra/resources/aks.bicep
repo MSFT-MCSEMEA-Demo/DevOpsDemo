@@ -7,7 +7,7 @@ param clusterName string
 @description('AKS dns prefix')
 param clusterDNSPrefix string
 
-@description('Admin user name for AKS node')
+@description('Admin user name - AKS node')
 param adminusername string
 
 @description('AKS node ssh public key')
