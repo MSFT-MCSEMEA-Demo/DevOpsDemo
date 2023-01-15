@@ -69,7 +69,7 @@ module aks 'resources/aks.bicep' = {
   }
 }
 
-
+/*
 var storagename = '${name}storage'
 module storage 'resources/storage.bicep' = {
   name: '${rg.name}-storage'
@@ -102,7 +102,7 @@ module mysql 'resources/mysql.bicep' = {
     administratorLoginPassword: 'Demopass123'
     isprod: true
   }
-}
+}*/
 
 output resourcegroupname string = rg.name
 output acrloginserver string = acr.outputs.acrloginserver
@@ -115,11 +115,11 @@ output managedidentityprincipalid string = identity.outputs.managedIdentityPrinc
 output managedidentityclientid string = identity.outputs.managedIdentityClientId
 output managedidentityresourceid string = identity.outputs.managedIdentityResourceId
 output managedidentityname string = identity.outputs.managedIdentityName
-output storageaccountname string = storage.outputs.storageaccountname
+/*output storageaccountname string = storage.outputs.storageaccountname
 output storageresourceid string = storage.outputs.storageresourceid
 output storagebloburi string = storage.outputs.storagebloburi
 output appserviceurl string = website.outputs.appserviceurl
 output appsericeresourceid string = website.outputs.appsericeresourceid
-output mysqlresourceid string = mysql.outputs.mysqlresourceid
+output mysqlresourceid string = mysql.outputs.mysqlresourceid*/
 //output loganalyticresourceid string = loganalytic.outputs.loganalyticworkspaceresourceid
 //output loganalyticresourcename string = loganalytic.outputs.loganalyticworkspacename
